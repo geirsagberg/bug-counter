@@ -43,6 +43,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   letter-spacing: -.035em;
 }
 .summary-heading h1 strong { font-weight: 800; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
 .date-picker {
   position: relative;
   display: inline-flex;
@@ -80,6 +81,121 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 }
 .quiet-button:hover { border-color: var(--ink); }
 .quiet-button:disabled { opacity: .35; cursor: default; }
+.error-message {
+  border-left: 3px solid var(--danger);
+  color: var(--danger);
+  padding-left: 12px;
+  line-height: 1.45;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.auth-card {
+  width: min(420px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  padding: clamp(28px, 7vw, 44px);
+  box-shadow: 0 18px 60px rgba(32, 35, 31, .08);
+}
+.auth-card h1 { margin: 5px 0 12px; font-size: 1.8rem; letter-spacing: -.035em; }
+.auth-card p { color: var(--quiet); line-height: 1.55; }
+.auth-card form { display: grid; gap: 18px; }
+.auth-card label { display: grid; gap: 7px; }
+.auth-card label span, .eyebrow {
+  color: var(--quiet);
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.auth-card input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 11px 12px;
+}
+.auth-card code { font-size: .86em; }
+
+.workspace-controls { display: flex; align-items: center; gap: 8px; }
+.workspace-controls > select {
+  max-width: 170px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  padding: 9px 11px;
+}
+.workspace-menu { position: relative; }
+.workspace-menu > summary {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  cursor: pointer;
+  list-style: none;
+  letter-spacing: .08em;
+}
+.workspace-menu > summary::-webkit-details-marker { display: none; }
+.workspace-menu > section {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 120px));
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  padding: 18px;
+  box-shadow: 0 18px 50px rgba(32, 35, 31, .15);
+}
+.workspace-menu section > p { display: grid; gap: 3px; margin: 0 0 16px; }
+.workspace-menu small { color: var(--quiet); font-weight: 500; }
+.workspace-menu button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  padding: 7px 0;
+  text-align: left;
+}
+.workspace-menu button.danger-link { color: var(--danger); }
+.owner-controls { display: grid; gap: 10px; border-block: 1px solid var(--line); padding: 16px 0; margin-bottom: 10px; }
+.owner-controls form { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 8px; }
+.owner-controls label { display: grid; gap: 4px; min-width: 0; }
+.owner-controls label span, .owner-controls h3 { color: var(--quiet); font-size: .72rem; font-weight: 700; }
+.owner-controls h3 { margin: 10px 0 0; text-transform: uppercase; letter-spacing: .06em; }
+.owner-controls input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+}
+.owner-controls ul { display: grid; gap: 7px; list-style: none; margin: 0; padding: 0; }
+.owner-controls li { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .78rem; }
+.invite-link { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+
+.import-banner {
+  position: fixed;
+  z-index: 8;
+  right: 20px;
+  bottom: 20px;
+  width: min(430px, calc(100% - 40px));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  padding: 18px;
+  box-shadow: 0 18px 50px rgba(32, 35, 31, .16);
+}
+.import-banner p { margin: 0 0 14px; line-height: 1.5; }
+.import-banner div { display: flex; justify-content: flex-end; gap: 8px; }
 
 .environment-list { display: grid; gap: 14px; }
 .environment-row {
@@ -263,6 +379,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .shell { width: min(100% - 24px, 760px); padding-top: 34px; }
   .summary-heading { align-items: flex-start; margin-bottom: 32px; }
   .summary-heading h1 { max-width: 14rem; }
+  .header-actions { align-items: flex-end; flex-direction: column-reverse; }
+  .workspace-controls > select { max-width: 130px; }
   .environment-row { grid-template-columns: 1fr; gap: 8px; }
   .environment-name { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
   .environment-actions { opacity: 1; }
