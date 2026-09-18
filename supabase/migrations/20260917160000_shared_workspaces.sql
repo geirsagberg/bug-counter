@@ -39,11 +39,9 @@ create table public.bug_registrations (
   description text check (description is null or char_length(description) <= 500),
   registered_at timestamptz not null default now(),
   created_by uuid not null default auth.uid() references auth.users(id),
-  imported_source_id text,
   created_at timestamptz not null default now(),
   foreign key (workspace_id, environment_id)
-    references public.environments(workspace_id, id) on delete cascade,
-  unique (workspace_id, created_by, imported_source_id)
+    references public.environments(workspace_id, id) on delete cascade
 );
 
 create index bug_registrations_workspace_id_idx on public.bug_registrations(workspace_id);
@@ -62,16 +60,6 @@ create table public.workspace_invitations (
 );
 
 create index workspace_invitations_workspace_id_idx on public.workspace_invitations(workspace_id);
-
-create table public.local_imports (
-  workspace_id uuid not null references public.workspaces(id) on delete cascade,
-  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
-  source text not null,
-  imported_at timestamptz not null default now(),
-  primary key (workspace_id, user_id, source)
-);
-
-create index local_imports_user_id_idx on public.local_imports(user_id);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -135,7 +123,6 @@ alter table public.workspace_members enable row level security;
 alter table public.environments enable row level security;
 alter table public.bug_registrations enable row level security;
 alter table public.workspace_invitations enable row level security;
-alter table public.local_imports enable row level security;
 
 create policy "members can read workspaces"
 on public.workspaces for select to authenticated
@@ -182,32 +169,17 @@ create policy "owners can read invitations"
 on public.workspace_invitations for select to authenticated
 using (public.is_workspace_owner(workspace_id));
 
-create policy "users can read their import marker"
-on public.local_imports for select to authenticated
-using (user_id = auth.uid() and public.is_workspace_member(workspace_id));
-
-create policy "users can create their import marker"
-on public.local_imports for insert to authenticated
-with check (user_id = auth.uid() and public.is_workspace_member(workspace_id));
-
-create policy "users can refresh their import marker"
-on public.local_imports for update to authenticated
-using (user_id = auth.uid() and public.is_workspace_member(workspace_id))
-with check (user_id = auth.uid() and public.is_workspace_member(workspace_id));
-
 revoke all on public.workspaces from anon, authenticated;
 revoke all on public.workspace_members from anon, authenticated;
 revoke all on public.environments from anon, authenticated;
 revoke all on public.bug_registrations from anon, authenticated;
 revoke all on public.workspace_invitations from anon, authenticated;
-revoke all on public.local_imports from anon, authenticated;
 
 grant select, update (name), delete on public.workspaces to authenticated;
 grant select on public.workspace_members to authenticated;
 grant select, insert, update (color) on public.environments to authenticated;
 grant select, insert on public.bug_registrations to authenticated;
 grant select on public.workspace_invitations to authenticated;
-grant select, insert, update on public.local_imports to authenticated;
 
 create or replace function public.create_workspace(workspace_name text)
 returns uuid

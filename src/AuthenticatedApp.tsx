@@ -6,7 +6,6 @@ import {
   consumeAuthenticationError,
   getPendingInvitation,
 } from './auth/invitationState'
-import { LocalStorageBugRepository } from './data/localStorageBugRepository'
 import { SupabaseBugRepository } from './data/supabaseBugRepository'
 import {
   WorkspaceService,
@@ -261,7 +260,6 @@ function WorkspaceApp({
       service={service}
       workspace={workspace}
       workspaces={workspaces}
-      isFirstWorkspace={workspace.id === workspaces[0]?.id}
       onSelect={selectWorkspace}
       onChanged={() => loadWorkspaces(workspace.id)}
     />
@@ -330,7 +328,6 @@ function WorkspaceCounter({
   service,
   workspace,
   workspaces,
-  isFirstWorkspace,
   onSelect,
   onChanged,
 }: {
@@ -339,7 +336,6 @@ function WorkspaceCounter({
   service: WorkspaceService
   workspace: Workspace
   workspaces: Workspace[]
-  isFirstWorkspace: boolean
   onSelect(id: string): void
   onChanged(): Promise<void>
 }) {
@@ -349,99 +345,21 @@ function WorkspaceCounter({
   )
 
   return (
-    <>
-      <LocalImportPrompt repository={repository} enabled={isFirstWorkspace} />
-      <App
-        repository={repository}
-        canManageWorkspace={workspace.role === 'owner'}
-        workspaceControls={
-          <WorkspaceControls
-            client={client}
-            email={email}
-            service={service}
-            workspace={workspace}
-            workspaces={workspaces}
-            onSelect={onSelect}
-            onChanged={onChanged}
-          />
-        }
-      />
-    </>
-  )
-}
-
-function LocalImportPrompt({
-  repository,
-  enabled,
-}: {
-  repository: SupabaseBugRepository
-  enabled: boolean
-}) {
-  const [localData, setLocalData] = useState<Awaited<
-    ReturnType<LocalStorageBugRepository['load']>
-  > | null>(null)
-  const [visible, setVisible] = useState(false)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (!enabled) return
-    const local = new LocalStorageBugRepository()
-    Promise.all([local.load(), repository.hasImportedLocalData()])
-      .then(([data, imported]) => {
-        if (
-          !imported &&
-          (data.registrations.length || data.environments.length)
-        ) {
-          setLocalData(data)
-          setVisible(true)
-        }
-      })
-      .catch(() => setError('Could not check your browser data.'))
-  }, [enabled, repository])
-
-  if (!visible && !error) return null
-  return (
-    <aside className="import-banner">
-      {error ? (
-        <p role="alert">{error}</p>
-      ) : (
-        <>
-          <p>
-            <strong>Import browser data?</strong> This uploads your saved
-            environments and registrations to this workspace.
-          </p>
-          <div>
-            <button
-              className="quiet-button"
-              type="button"
-              onClick={() => setVisible(false)}
-            >
-              Not now
-            </button>
-            <button
-              className="primary-button"
-              type="button"
-              onClick={async () => {
-                if (!localData) return
-                try {
-                  await repository.importLocalData(localData)
-                  setVisible(false)
-                  window.location.reload()
-                } catch (cause) {
-                  setError(
-                    cause instanceof Error
-                      ? cause.message
-                      : 'Could not import browser data.',
-                  )
-                }
-              }}
-            >
-              Import
-            </button>
-          </div>
-        </>
-      )}
-    </aside>
+    <App
+      repository={repository}
+      canManageWorkspace={workspace.role === 'owner'}
+      workspaceControls={
+        <WorkspaceControls
+          client={client}
+          email={email}
+          service={service}
+          workspace={workspace}
+          workspaces={workspaces}
+          onSelect={onSelect}
+          onChanged={onChanged}
+        />
+      }
+    />
   )
 }
 

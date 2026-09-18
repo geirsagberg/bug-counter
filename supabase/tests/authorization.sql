@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(52);
+select plan(49);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -44,7 +44,7 @@ select ok(
     select bool_and(not has_table_privilege('anon', 'public.' || table_name, privilege))
     from unnest(array[
       'workspaces', 'workspace_members', 'environments', 'bug_registrations',
-      'workspace_invitations', 'local_imports'
+      'workspace_invitations'
     ]) table_name
     cross join unnest(array['SELECT', 'INSERT', 'UPDATE', 'DELETE']) privilege
   ),
@@ -306,42 +306,6 @@ select is(
   (select count(*) from public.workspace_members where workspace_id = '20000000-0000-0000-0000-000000000001'),
   0::bigint,
   'failed invitation acceptance does not create membership'
-);
-
-reset role;
-insert into public.workspace_members (workspace_id, user_id, role) values (
-  '20000000-0000-0000-0000-000000000001',
-  '10000000-0000-0000-0000-000000000002',
-  'member'
-);
-set local role authenticated;
-select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000002', true);
-select lives_ok(
-  $$ insert into public.bug_registrations (
-    workspace_id, environment_id, severity, imported_source_id
-  ) values (
-    '20000000-0000-0000-0000-000000000001',
-    '30000000-0000-0000-0000-000000000001',
-    'Medium',
-    'local-registration-1'
-  ) on conflict (workspace_id, created_by, imported_source_id) do nothing $$,
-  'local import can insert a registration'
-);
-select lives_ok(
-  $$ insert into public.bug_registrations (
-    workspace_id, environment_id, severity, imported_source_id
-  ) values (
-    '20000000-0000-0000-0000-000000000001',
-    '30000000-0000-0000-0000-000000000001',
-    'Medium',
-    'local-registration-1'
-  ) on conflict (workspace_id, created_by, imported_source_id) do nothing $$,
-  'retrying local import succeeds'
-);
-select is(
-  (select count(*) from public.bug_registrations where imported_source_id = 'local-registration-1'),
-  1::bigint,
-  'retrying local import does not duplicate registrations'
 );
 
 select * from finish();

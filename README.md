@@ -21,7 +21,6 @@ Shared data lives in Supabase Postgres. Every exposed table uses row-level secur
 The UI uses `BugRepository` as its persistence boundary:
 
 - `SupabaseBugRepository` stores the selected workspace's environments and registrations.
-- `LocalStorageBugRepository` reads browser data for the explicit, one-time import flow.
 - The date filter and last selected workspace remain device-local preferences.
 
 Database changes live in `supabase/migrations`. Apply them with `npx supabase db push` rather than editing the remote database directly.
