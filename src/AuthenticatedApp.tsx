@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import type { Session, SupabaseClient } from '@supabase/supabase-js'
 import { App } from './App'
 import {
@@ -381,6 +381,23 @@ function WorkspaceControls({
   onSelect(id: string): void
   onChanged(): Promise<void>
 }) {
+  const menu = useRef<HTMLDetailsElement>(null)
+
+  useEffect(() => {
+    function closeMenu(event: PointerEvent) {
+      if (
+        menu.current?.open &&
+        event.target instanceof Node &&
+        !menu.current.contains(event.target)
+      ) {
+        menu.current.open = false
+      }
+    }
+
+    document.addEventListener('pointerdown', closeMenu)
+    return () => document.removeEventListener('pointerdown', closeMenu)
+  }, [])
+
   return (
     <div className="workspace-controls">
       {workspaces.length > 1 && (
@@ -396,7 +413,7 @@ function WorkspaceControls({
           ))}
         </select>
       )}
-      <details className="workspace-menu">
+      <details ref={menu} className="workspace-menu">
         <summary aria-label="Workspace menu">•••</summary>
         <section>
           <p>
