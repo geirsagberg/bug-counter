@@ -347,6 +347,7 @@ function WorkspaceCounter({
   return (
     <App
       repository={repository}
+      workspaceName={workspace.name}
       canManageWorkspace={workspace.role === 'owner'}
       workspaceControls={
         <WorkspaceControls

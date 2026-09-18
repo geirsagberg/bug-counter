@@ -208,7 +208,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .environment-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   opacity: 0;
 }
 .environment-actions input[type="color"] {
@@ -223,10 +223,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .environment-actions input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 .environment-actions input[type="color"]::-webkit-color-swatch { border: 1px solid var(--line); border-radius: 50%; }
 .environment-name button {
-  border: 0;
-  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--line));
+  border-radius: 5px;
+  background: var(--paper);
   color: var(--danger);
-  padding: 5px 0 0;
+  padding: 4px 7px;
   font-size: .68rem;
 }
 .environment-row:hover .environment-actions,
@@ -369,7 +370,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .environment-row { grid-template-columns: 1fr; gap: 8px; }
   .environment-name { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
   .environment-actions { opacity: 1; }
-  .environment-name button { padding: 2px 0; }
+  .environment-name button { padding: 4px 7px; }
   .environment-row dl { padding: 15px; }
   .new-bug, .registrations { margin-left: 0; padding-left: 0; }
   .entry-form { grid-template-columns: 1fr; }

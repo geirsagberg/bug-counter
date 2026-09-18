@@ -16,6 +16,7 @@ import type {
 
 type AppProps = {
   repository: BugRepository
+  workspaceName: string
   canManageWorkspace?: boolean
   workspaceControls?: ReactNode
 }
@@ -53,6 +54,7 @@ function initialSinceDate() {
 
 export function App({
   repository,
+  workspaceName,
   canManageWorkspace = true,
   workspaceControls,
 }: AppProps) {
@@ -91,6 +93,13 @@ export function App({
     if (since) window.localStorage.setItem(SINCE_DATE_KEY, since)
     else window.localStorage.removeItem(SINCE_DATE_KEY)
   }, [since])
+
+  useEffect(() => {
+    document.title = `${workspaceName} · Bug Counter`
+    return () => {
+      document.title = 'Bug Counter'
+    }
+  }, [workspaceName])
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -193,6 +202,7 @@ export function App({
     <main className="shell">
       <header className="summary-heading">
         <h1>
+          <span>{workspaceName}:</span>
           <strong>{filtered.length}</strong>{' '}
           {filtered.length === 1 ? 'bug' : 'bugs'} since
           <label className="date-picker">
